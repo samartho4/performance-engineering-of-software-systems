@@ -19,29 +19,28 @@ PRODUCT := matrix_multiply
 CC := clang
 
 # These flags will be applied to your code any time it is built.
-CFLAGS := -Wall -std=c99 -D_POSIX_C_SOURCE=200809L
+CFLAGS := -Wall -std=c99 -D_POSIX_C_SOURCE=200809L 
 
 # These flags are applied only if you build your code with "make DEBUG=1".  -g
 # generates debugging symbols, -DDEBUG defines the preprocessor symbol "DEBUG"
 # (so that you can use "#ifdef DEBUG" in your code), and -O0 disables compiler
 # optimizations, so that the binary generated more directly corresponds to your
 # source code.
-CFLAGS_DEBUG := -g -DDEBUG -O1
-
+CFLAGS_DEBUG := -g -DDEBUG -O3
 
 # In the release version, we ask for many optimizations; -O3 sets the
 # optimization level to three.  -DNDEBUG defines the NDEBUG macro,
 # which disables assertion checks.
-CFLAGS_RELEASE := -O1 -DNDEBUG
+CFLAGS_RELEASE := -O3 -DNDEBUG
 
 # These flags are used to invoke Clang's address sanitizer.
-CFLAGS_ASAN := -O1 -g -fsanitize=address
+CFLAGS_ASAN := -O3 -g -fsanitize=address
 
 # These flags are applied when linking object files together into your binary.
 # If you need to link against libraries, add the appropriate flags here.  By
 # default, your code is linked against the "rt" library with the flag -lrt;
 # this library is used by the timing code in the testbed.
-LDFLAGS := 
+LDFLAGS := -flto 
 
 ################################################################################
 # You probably won't need to change anything below this line, but if you're
@@ -78,11 +77,14 @@ endif
 all: $(PRODUCT)
 
 # This special "target" will remove the binary and all intermediate files.
-clean::
-	rm -f $(OBJ) $(PRODUCT) .buildmode \
-        $(addsuffix .gcda, $(basename $(SRC))) \
-        $(addsuffix .gcno, $(basename $(SRC))) \
-        $(addsuffix .gcov, $(SRC) fasttime.h)
+.PHONY: clean
+
+clean:
+	 rm -f *.o $(PRODUCT) .buildmode \
+	     $(addsuffix .gcda, $(basename $(SRC))) \
+	     $(addsuffix .gcno, $(basename $(SRC))) \
+	     $(addsuffix .gcov, $(SRC) fasttime.h)
+
 
 # This rule generates a list of object names.  Each of your source files (but
 # not your header files) produces a single object file when it's compiled.  In
